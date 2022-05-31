@@ -1,0 +1,1 @@
+Send Plex events to discord channel
