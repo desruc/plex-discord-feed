@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { getImageUrl } from "../services/image";
 import { sendPlaybackEventEmbed } from "../services/discord";
 import { PlexWebhookPayload, PlexWebhookRequest } from "../types/plex";
 
@@ -9,7 +10,7 @@ type PlexWebhookReqHandler = RequestHandler<
   unknown
 >;
 
-export const handleEvent: PlexWebhookReqHandler = (req, res) => {
+export const handleEvent: PlexWebhookReqHandler = async (req, res) => {
   const { payload } = req.body;
 
   // eslint-disable-next-line
@@ -26,10 +27,9 @@ export const handleEvent: PlexWebhookReqHandler = (req, res) => {
 
   const isVideo = ["movie", "episode"].includes(parsed.Metadata.type);
 
-  // TODO: Store image in redis
-
   if (event === "media.play" && isVideo) {
-    sendPlaybackEventEmbed(parsed);
+    const image = await getImageUrl(parsed, req);
+    sendPlaybackEventEmbed(parsed, image);
   }
 
   res.status(200);

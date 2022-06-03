@@ -38,6 +38,7 @@ export interface PlexWebhookPayload {
   event: PlexWebhookEvent;
   user: boolean;
   owner: boolean;
+  thumb: string;
   Account: {
     id: number;
     thumb: string;

@@ -9,13 +9,18 @@ const discordEmbedColors = [
   9807270, 9936031, 8359053, 12370112, 3426654, 2899536, 16776960
 ];
 
-export const sendPlaybackEventEmbed = async (event: PlexWebhookPayload) => {
+export const sendPlaybackEventEmbed = async (
+  event: PlexWebhookPayload,
+  imageUrl: string | null
+) => {
+  const thumbnail = imageUrl ? { thumbnail: { url: imageUrl } } : {};
   const playbackEmbed = {
     embeds: [
       {
         title: "MEDIA.PLAY",
         color:
           discordEmbedColors[Math.floor(Math.random() * discordEmbedColors.length)],
+        ...thumbnail,
         fields: [
           {
             name: "User",
