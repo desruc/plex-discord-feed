@@ -1,7 +1,8 @@
 import axios from "axios";
-import { PlexWebhookPayload } from "../types/plex";
-import env from "../core/env";
-import { formatSubtitle, formatTitle } from "../utils/stringHelpers";
+import { PlexWebhookPayload } from "~/types/plex";
+import env from "~/core/env";
+import { formatSubtitle, formatTitle } from "~/utils/stringHelpers";
+import { logger } from "~/core/logger";
 
 const discordEmbedColors = [
   0, 1752220, 1146986, 3066993, 2067276, 3447003, 2123412, 10181046, 7419530,
@@ -14,6 +15,7 @@ export const sendPlaybackEventEmbed = async (
   imageUrl: string | null
 ) => {
   const thumbnail = imageUrl ? { thumbnail: { url: imageUrl } } : {};
+
   const playbackEmbed = {
     embeds: [
       {
@@ -39,11 +41,13 @@ export const sendPlaybackEventEmbed = async (
     ]
   };
 
-  await axios
-    .post(env.DISCORD_WEBHOOK_URL!, playbackEmbed, {
-      headers: {
-        "content-type": "application/json"
-      }
-    })
-    .catch((e) => console.error(e));
+  if (env.DISCORD_WEBHOOK_URL) {
+    await axios
+      .post(env.DISCORD_WEBHOOK_URL, playbackEmbed, {
+        headers: {
+          "content-type": "application/json"
+        }
+      })
+      .catch((error) => logger.error("Error sending to webhook", { error }));
+  }
 };

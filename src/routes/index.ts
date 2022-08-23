@@ -1,7 +1,7 @@
 import { Application } from "express";
 import multer from "multer";
-import * as plexWebhooks from "../controllers/plexWebhooks";
-import * as imageController from "../controllers/image";
+import * as plexWebhooks from "~/controllers/plexWebhooks";
+import * as imageController from "~/controllers/image";
 
 const upload = multer({ storage: multer.memoryStorage() });
 

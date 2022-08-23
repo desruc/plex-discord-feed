@@ -58,5 +58,5 @@ export interface PlexWebhookPayload {
 }
 
 export interface PlexWebhookRequest {
-  payload: PlexWebhookPayload;
+  payload: string;
 }

@@ -1,4 +1,4 @@
-import { PlexPayloadMetadata } from "../types/plex";
+import { PlexPayloadMetadata } from "~/types/plex";
 
 // https://github.com/plexinc/webhooks-slack/blob/master/index.js#L148
 export function formatTitle(metadata: PlexPayloadMetadata) {
