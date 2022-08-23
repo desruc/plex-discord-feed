@@ -1,7 +1,8 @@
 import { RequestHandler } from "express";
-import { getImageUrl } from "../services/image";
-import { sendPlaybackEventEmbed } from "../services/discord";
-import { PlexWebhookPayload, PlexWebhookRequest } from "../types/plex";
+import { getImageUrl } from "~/services/image";
+import { sendPlaybackEventEmbed } from "~/services/discord";
+import { PlexWebhookPayload, PlexWebhookRequest } from "~/types/plex";
+import { logger } from "~/core/logger";
 
 type PlexWebhookReqHandler = RequestHandler<
   unknown,
@@ -13,17 +14,14 @@ type PlexWebhookReqHandler = RequestHandler<
 export const handleEvent: PlexWebhookReqHandler = async (req, res) => {
   const { payload } = req.body;
 
+  // TODO: Validate payload
   // eslint-disable-next-line
   // @ts-ignore
   const parsed = JSON.parse(payload as PlexWebhookPayload);
 
-  const {
-    event,
-    Account: { title: user }
-  } = parsed;
+  const { event } = parsed;
 
-  console.log("EVENT RECIEVED: ", event);
-  console.log("USER: ", user);
+  logger.info("EVENT RECIEVED", { event });
 
   const isVideo = ["movie", "episode"].includes(parsed.Metadata.type);
 

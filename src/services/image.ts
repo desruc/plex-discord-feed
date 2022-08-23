@@ -2,8 +2,9 @@ import axios from "axios";
 import { Request } from "express";
 import sha1 from "sha1";
 import sharp from "sharp";
-import { PlexWebhookPayload, PlexWebhookRequest } from "../types/plex";
-import { getCachedImage, saveImageToCache } from "./redis";
+import { logger } from "~/core/logger";
+import { PlexWebhookPayload, PlexWebhookRequest } from "~/types/plex";
+import { getCachedImage, isRedisConfigured, saveImageToCache } from "./redis";
 
 const appURL = process.env.APP_URL;
 
@@ -11,14 +12,16 @@ const getBuffer = async (
   payload: PlexWebhookPayload,
   req: Request<unknown, unknown, PlexWebhookRequest, unknown, Record<string, any>>
 ) => {
+  if (!isRedisConfigured) return null;
+
   if (req.file && req.file.buffer) return req.file.buffer;
 
   if (payload.thumb) {
     try {
       const bufferRes = await axios.get(payload.thumb);
       return bufferRes.data as Buffer;
-    } catch (e) {
-      console.error("Error fetching thumbnail");
+    } catch (error) {
+      logger.error("Error fetching thumbnail", { error });
       return null;
     }
   }
@@ -35,13 +38,13 @@ export const getImageUrl = async (
   const existing = await getCachedImage(key);
 
   if (existing) {
-    console.log(`Using cached image ${key}`);
+    logger.info("Using cached image", { key });
     return `${appURL}/images/${key}`;
   }
 
   const buffer = await getBuffer(payload, req);
 
-  if (buffer) {
+  if (buffer && isRedisConfigured) {
     const image = await sharp(buffer)
       .resize({
         height: 75,

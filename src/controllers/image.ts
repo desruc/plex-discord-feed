@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import sharp from "sharp";
-import { getCachedImage } from "../services/redis";
+import { getCachedImage } from "~/services/redis";
 
 // eslint-disable-next-line
 export const getImage: RequestHandler = async (req, res, next) => {
