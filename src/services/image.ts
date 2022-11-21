@@ -12,12 +12,19 @@ const getBuffer = async (
   payload: PlexWebhookPayload,
   req: Request<unknown, unknown, PlexWebhookRequest, unknown, Record<string, any>>
 ) => {
-  if (!isRedisConfigured) return null;
+  if (!isRedisConfigured) {
+    logger.info("Redis not configured. Skipping image.");
+    return null;
+  }
 
-  if (req.file && req.file.buffer) return req.file.buffer;
+  if (req.file && req.file.buffer) {
+    logger.info("Using request file");
+    return req.file.buffer;
+  }
 
   if (payload.thumb) {
     try {
+      logger.info("Attempting to fetch thumbnail", { ur: payload.thumb });
       const bufferRes = await axios.get(payload.thumb);
       return bufferRes.data as Buffer;
     } catch (error) {
@@ -56,7 +63,11 @@ export const getImageUrl = async (
 
     await saveImageToCache(key, image);
 
-    return `${appURL}/images/${key}`;
+    const imageUrl = `${appURL}/images/${key}`;
+
+    logger.info("Image saved to cache", { url: imageUrl });
+
+    return imageUrl;
   }
 
   return null;
