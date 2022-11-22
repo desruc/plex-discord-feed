@@ -8,6 +8,9 @@ export const isRedisConfigured = redisClient !== null;
 
 export const getCachedImage = async (key: string) => {
   if (redisClient) {
+    const keys = await redisClient.keys("*");
+    console.log("🚀 ~ file: redis.ts ~ line 12 ~ getCachedImage ~ keys", keys);
+
     const image = await redisClient.getBuffer(key);
     return image;
   }
