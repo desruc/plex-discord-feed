@@ -56,10 +56,10 @@ export const getImageUrl = async (
 
     const image = await sharp(buffer)
       .resize({
-        height: 75,
-        width: 75,
+        height: 80,
+        width: 80,
         fit: "contain",
-        background: "white"
+        background: "black"
       })
       .toBuffer();
 
