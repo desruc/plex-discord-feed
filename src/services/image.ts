@@ -6,8 +6,6 @@ import { logger } from "~/core/logger";
 import { PlexWebhookPayload, PlexWebhookRequest } from "~/types/plex";
 import { getCachedImage, isRedisConfigured, saveImageToCache } from "./redis";
 
-const appURL = process.env.APP_URL;
-
 const getBuffer = async (
   payload: PlexWebhookPayload,
   req: Request<unknown, unknown, PlexWebhookRequest, unknown, Record<string, any>>
@@ -44,14 +42,18 @@ export const getImageUrl = async (
 
   const existing = await getCachedImage(key);
 
+  const imageUrl = `${process.env.APP_URL}/images/${key}`;
+
   if (existing) {
-    logger.info("Using cached image", { key });
-    return `${appURL}/images/${key}`;
+    logger.info("Using cached image", { imageUrl });
+    return imageUrl;
   }
 
   const buffer = await getBuffer(payload, req);
 
   if (buffer && isRedisConfigured) {
+    logger.info("Resizing image", { url: imageUrl });
+
     const image = await sharp(buffer)
       .resize({
         height: 75,
@@ -62,8 +64,6 @@ export const getImageUrl = async (
       .toBuffer();
 
     await saveImageToCache(key, image);
-
-    const imageUrl = `${appURL}/images/${key}`;
 
     logger.info("Image saved to cache", { url: imageUrl });
 
