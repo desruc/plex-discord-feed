@@ -10,6 +10,8 @@ Plex posts image content with its events. These are recieved and cached in Redis
 
 The server will still work if you do not have Redis configured (it just won't include an image on the embed).
 
+![image](https://user-images.githubusercontent.com/36631337/203314996-0e8001bf-bd5e-4282-bf14-b583b875c696.png)
+
 ## Getting started
 
 - Create a Plex webhook hook and point it to `http://[YOUR_IP]:[PORT]/plex-event`
