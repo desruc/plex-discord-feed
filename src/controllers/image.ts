@@ -8,5 +8,9 @@ export const getImage: RequestHandler = async (req, res, next) => {
 
   if (!exists) return next();
 
+  res.set("Content-Type", "image/webp");
+
   sharp(exists).jpeg().pipe(res);
+
+  next();
 };
